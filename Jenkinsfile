@@ -1,10 +1,15 @@
 pipeline {
-    agent any
+    agent { docker { image 'python:3.5.1' } }
+
 
     stages {
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'echo "Hello World"'
+                sh '''
+                    echo "Multiline shell steps works too"
+                    ls -lah
+                '''
             }
         }
         stage('Test') {
@@ -14,7 +19,9 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                timeout(time: 1, unit: 'MINUTES') {
+                    sh './health-check.sh'
+                }
             }
         }
     }
